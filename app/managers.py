@@ -17,8 +17,7 @@ class ActorManager:
         self.conn.commit()
 
     def create(self, first_name: str, last_name: str) -> None:
-        cursor = self.conn.cursor()
-        cursor.execute(
+        self.cursor.execute(
             f"""INSERT INTO {self.table_name}
             (first_name, last_name)
             VALUES (?, ?)""",
@@ -31,8 +30,6 @@ class ActorManager:
                                   f" last_name FROM {self.table_name}")
         actors = res.fetchall()
         result = []
-        if actors is False:
-            return result
         for actor in actors:
             result.append(Actor(actor[0], actor[1], actor[2]))
         return result
@@ -52,5 +49,6 @@ class ActorManager:
     def delete(self, pk: int) -> None:
         self.cursor.execute(f"""
     DELETE from {self.table_name}
-    WHERE id = {pk}""")
+    WHERE id = ?""",
+            (pk,),)
         self.conn.commit()
